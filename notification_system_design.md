@@ -1,124 +1,104 @@
-# Campus Notification System Design
+# Alert System Architecture Document
 
-## Stage 1: Basic Notification System
+## Phase 1: Core Notification Features
 
-### Architecture
+### Structural Overview
+The initial design uses a standard synchronous request-reply flow:
+Client → API Gateway → Controllers → Business Logic → External Provider → Final Output
 
-The system follows a simple request-response model:
+### Core Capabilities
+* Retrieve alert data from an external source
+* Filter and sequence the alerts using timestamps and importance levels
+* Deliver the 5 most critical notifications to the client
 
-Client → API → Controller → Service Layer → External API → Response
+### Importance Hierarchy
+* Email → Top Priority
+* SMS → Standard Priority
+* Push Notification → Lowest Priority
 
-### Functionality
-
-* Fetch notifications from external API
-* Process and sort notifications based on priority and timestamp
-* Return top 5 notifications
-
-### Priority Logic
-
-* Email → High Priority
-* SMS → Medium Priority
-* Push → Low Priority
-
-### Implementation
-
-* Flask used for API
-* Modular structure (routes, controllers, services)
-* Logging middleware integrated for all operations
+### Technical Details
+* Built using the Flask framework
+* Organized into distinct modules (routes, controllers, services)
+* Centralized logging applied across all layers
 
 ---
 
-## Stage 2: Scaling for Large Users
+## Phase 2: Accommodating User Growth
 
-### Problem
+### The Challenge
+A massive influx of users creates significant latency and strains the database infrastructure.
 
-Handling millions of users leads to increased latency and heavy database load.
+### Proposed Fixes
+* Deploy Redis for data caching
+* Apply pagination to restrict payload sizes
+* Leverage a Content Delivery Network (CDN) to speed up content access
 
-### Solution
-
-* Implement caching using Redis
-* Introduce pagination to limit response size
-* Use CDN for faster delivery
-
-### Benefits
-
-* Reduced API latency
-* Lower database load
-* Improved user experience
+### Advantages
+* Drops API response times
+* Alleviates stress on the main database
+* Enhances the overall user journey
 
 ---
 
-## Stage 3: Database Optimization
+## Phase 3: Optimizing the Data Layer
 
-### Problem
+### The Challenge
+Query execution slows down considerably as the volume of stored data expands.
 
-Slow query performance for large datasets.
-
-### Solution
-
-* Use composite indexing:
+### Proposed Fixes
+* Implement composite indexes on key fields:
   (user_id, is_read, timestamp DESC)
 
-### Benefits
-
-* Faster query execution
-* Efficient filtering and sorting
-
----
-
-## Stage 4: High Traffic Handling
-
-### Problem
-
-System overload due to high concurrent requests.
-
-### Solution
-
-* Load balancing across multiple servers
-* Database sharding for distributed storage
-* Read replicas for scaling read operations
-
-### Benefits
-
-* Improved system reliability
-* Better performance under heavy load
+### Advantages
+* Drastically improves query speeds
+* Streamlines data retrieval and sorting processes
 
 ---
 
-## Stage 5: Asynchronous Notification System
+## Phase 4: Managing Peak Traffic
 
-### Problem
+### The Challenge
+High volumes of concurrent API requests threaten to overwhelm the current system setup.
 
-Sending notifications synchronously is slow and inefficient.
+### Proposed Fixes
+* Deploy load balancers to distribute traffic evenly
+* Introduce database sharding for decentralized data storage
+* Utilize read replicas to handle heavy read operations
 
-### Solution
-
-* Use message queues (Kafka / RabbitMQ)
-* Worker services handle notification delivery
-* Retry mechanism for failed deliveries
-
-### Flow
-
-API → Queue → Worker → Notification Delivery
-
-### Benefits
-
-* Non-blocking system
-* Scalable architecture
-* Reliable delivery system
+### Advantages
+* Boosts the system's overall uptime
+* Sustains high performance during traffic spikes
 
 ---
 
-## Tech Stack
+## Phase 5: Transitioning to Asynchronous Processing
 
-* Backend: Flask
-* Database: PostgreSQL
-* Cache: Redis
-* Queue: Kafka / RabbitMQ
-* Logging: Custom middleware
+### The Challenge
+Synchronous delivery of alerts creates bottlenecks and slows down the system.
+
+### Proposed Fixes
+* Adopt a message broker like Kafka or RabbitMQ
+* Spin up dedicated background workers to handle delivery tasks
+* Build in automatic retries for failed delivery attempts
+
+### Operational Flow
+API Endpoint → Message Broker → Background Worker → End User
+
+### Advantages
+* Eliminates blocking operations
+* Creates a highly scalable foundation
+* Ensures dependable delivery of messages
 
 ---
 
-## Conclusion
+## Technology Stack Summary
+* **Web Framework:** Flask
+* **Relational DB:** PostgreSQL
+* **In-Memory Store:** Redis
+* **Message Broker:** Kafka or RabbitMQ
+* **Monitoring:** Purpose-built logging middleware
 
-The system is designed to be scalable, efficient, and reliable. It evolves from a simple API-based system to a distributed microservices architecture capable of handling millions of users and high traffic loads.
+---
+
+## Final Thoughts
+This architecture is structured for maximum scalability, speed, and dependability. What begins as a straightforward REST API progressively transforms into a robust, distributed microservice ecosystem ready to handle intense traffic and a massive user base.
