@@ -1,7 +1,7 @@
 import sys
 
 # IMPORTANT: add root path (same as notification app)
-sys.path.append(r"C:\Users\lenovo\Documents\GitHub\RA2311003020224")
+sys.path.append(r"C:\Users\lenovo\Documents\GitHub\RA2311003020243")
 
 from flask import Flask
 from routes.routes import vehicle_routes

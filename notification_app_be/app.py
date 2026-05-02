@@ -1,7 +1,7 @@
 
 import sys
 import os
-sys.path.append(r"C:\Users\lenovo\Documents\GitHub\RA2311003020224")
+sys.path.append(r"C:\Users\lenovo\Documents\GitHub\RA2311003020243")
 from flask import Flask
 from routes.routes import notification_routes
 import routes.routes
